@@ -1,3 +1,7 @@
+/**
+ * will hold process data
+ */
+
 public  class Process<T, R> {
     Thread thread;
     SchedulerRunnable<T, R> run;

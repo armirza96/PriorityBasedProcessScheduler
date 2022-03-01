@@ -20,13 +20,18 @@ public class Main {
 
         int processCount  = Integer.parseInt(reader.readLine());
 
+        ArrayList<Process> proccesses 
+
         String line;
         while((line = reader.readLine()) != null) {
             String[] values = line.split(" ");
+
+            String name = values[0];
+            int 
         }
 
         reader.close();
 
-        return new List<Process>();
+        return 
     }
 }
