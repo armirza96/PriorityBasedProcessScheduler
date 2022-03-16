@@ -1,28 +1,8 @@
+
+
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.function.Supplier;
 
-// public class Timer {
-//     Thread thread;
-//     SchedulerRunnable<Supplier<Long>, Long> run;
-
-//     public Timer() {
-//         Supplier<Long> time = () -> {
-//             Date date = new Date();
-//             //This method returns the time in millis
-//             long timeMilli = date.getTime();
-//             return timeMilli;
-//         };
-
-//         run = new SchedulerRunnable<Supplier<Long>, Long>(time);
-//         thread = new Thread(run);
-//         thread.start();
-//     }
-
-//     public Long getTime() {
-//         return run.getValue();
-//     }
-// }
 public class Timer {
     Thread thread;
     SchedulerRunnable<Supplier<Timestamp>, Timestamp> run;

@@ -1,8 +1,9 @@
+
 /**
  * will hold process data
  */
 
-public  class Process {
+public class Process {
     Thread thread;
     String id;
     int arrivalTime;
