@@ -252,14 +252,4 @@ public class Scheduler {
             p.increaseWaitingTime(wt);
         }
     }
-
-    private void incrementTime() {
-        time++;
-
-        if(time == nextProcess.arrivalTime) {
-            synchronized(fileReader) {
-                fileReader.notify();
-            }
-        }
-    }
 }
