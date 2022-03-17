@@ -219,7 +219,7 @@ public class Scheduler {
     private int getProcessPriority(Process p) {
         // waiting time calculation = turn around time - burts
         int waitingTime = (p.waitingTime - p.burstTime);
-        int bonus = (int) (10*waitingTime / (timer.getTime().getTime() - p.arrivalTime)); 
+        int bonus = (int) (10 * waitingTime / (timer.getTime() - p.arrivalTime)); 
         return Math.max(100, Math.min(p.priority - bonus + 5, 139));
     }
 
@@ -270,9 +270,9 @@ public class Scheduler {
     }
 
     private void addWaitingTimeToProcesses(int wt) {
-        for(Process p: activeQueue) {
-            p.increaseWaitingTime(wt);
-        }
+        // for(Process p: activeQueue) {
+        //     p.increaseWaitingTime(wt);
+        // }
 
         for(Process p: deactiveQueue) {
             p.increaseWaitingTime(wt);

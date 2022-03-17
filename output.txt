@@ -1746,3 +1746,60 @@ Time 3575, P1, Paused
 Time 3575, P1, Priority updated to 110
 Time 3575, P1, Resumed, Granted: 150
 Time 3725, P1, Terminated
+
+--------------------------------------------------------------------
+Time 1000, P1, Started, Granted: 1000
+Time 2000, P1, Paused
+Time 2000, P1, Resumed, Granted: 1000
+Time 3000, P1, Paused
+Time 3000, P1, Priority updated to 100
+Time 3000, P2, Started, Granted: 100
+Time 3100, P2, Terminated
+Time 3100, P1, Resumed, Granted: 200
+Time 3200, P3, Arrived
+Time 3300, P1, Paused
+Time 3300, P3, Started, Granted: 100
+Time 3400, P3, Terminated
+Time 3400, P1, Resumed, Granted: 200
+Time 3600, P1, Paused
+Time 3600, P1, Priority updated to 105
+Time 3600, P1, Resumed, Granted: 175
+Time 3775, P1, Terminated
+
+--------------------------------------------------------------------
+Time 1000, P1, Started, Granted: 1000
+Time 2000, P1, Paused
+Time 2000, P1, Resumed, Granted: 1000
+Time 3000, P1, Paused
+Time 3000, P1, Priority updated to 100
+Time 3000, P2, Started, Granted: 100
+Time 3100, P2, Terminated
+Time 3100, P1, Resumed, Granted: 200
+Time 3200, P3, Arrived
+Time 3300, P1, Paused
+Time 3300, P3, Started, Granted: 100
+Time 3400, P3, Terminated
+Time 3400, P1, Resumed, Granted: 200
+Time 3600, P1, Paused
+Time 3600, P1, Priority updated to 105
+Time 3600, P1, Resumed, Granted: 175
+Time 3775, P1, Terminated
+
+--------------------------------------------------------------------
+Time 1000, P1, Started, Granted: 1000
+Time 2000, P1, Paused
+Time 2000, P1, Resumed, Granted: 1000
+Time 3000, P1, Paused
+Time 3000, P1, Priority updated to 100
+Time 3000, P2, Started, Granted: 100
+Time 3100, P2, Terminated
+Time 3100, P1, Resumed, Granted: 200
+Time 3200, P3, Arrived
+Time 3300, P1, Paused
+Time 3300, P3, Started, Granted: 100
+Time 3400, P3, Terminated
+Time 3400, P1, Resumed, Granted: 200
+Time 3600, P1, Paused
+Time 3600, P1, Priority updated to 105
+Time 3600, P1, Resumed, Granted: 175
+Time 3775, P1, Terminated

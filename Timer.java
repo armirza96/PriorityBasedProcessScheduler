@@ -5,20 +5,16 @@ import java.util.function.Supplier;
 
 public class Timer {
     Thread thread;
-    SchedulerRunnable<Supplier<Timestamp>, Timestamp> run;
+    TimerRunnable run;
 
     public Timer() {
-        Supplier<Timestamp> time = () -> {
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            return timestamp;
-        };
 
-        run = new SchedulerRunnable<Supplier<Timestamp>, Timestamp>(time);
+        run = new TimerRunnable();
         thread = new Thread(run);
         thread.start();
     }
 
-    public Timestamp getTime() {
-        return run.getValue();
+    public int getTime() {
+        return run.getTime();
     }
 }
