@@ -1,29 +1,18 @@
 
+
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.Thread.State;
-import java.sql.Timestamp;
-import java.text.Collator;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class Scheduler {
 
     Timer timer;
-    int time = 1000; 
+    //int time = 1000; 
     volatile Process nextProcess;
     Thread fileReader;
     Thread scheduler;
@@ -40,8 +29,7 @@ public class Scheduler {
      */
     public Scheduler() {
     
-        // start timer on another thread
-        timer = new Timer();
+        
 
         activeQueue = new LinkedList<Process>();
         deactiveQueue = new LinkedList<Process>();
@@ -72,7 +60,8 @@ public class Scheduler {
         scheduler = new Thread(process);
         scheduler.start();
         
-        
+        // start timer on another thread
+        timer = new Timer(this);
     }
 
     private void scheduleProcesses() {
@@ -100,21 +89,32 @@ public class Scheduler {
                 p.processedTime += timeSlotGranted;
                 addWaitingTimeToProcesses(timeSlotGranted);
                 
-                for(int i = 0; i < timeSlotGranted; i++) {
-                    synchronized(scheduler) { 
-                        try {
+                //for(int i = 0; i < timeSlotGranted; i++) {
+                int currentTime = timer.getTime();
+                int stopTime = currentTime + timeSlotGranted;
+                System.out.println("Current time: " + currentTime + "Stoptime: " + stopTime);
+                
+               
+                
+//                while(timer.getTime() < stopTime) {
+//                	System.out.println("Current Time: " + timer.getTime());
+//                    synchronized(scheduler) { 
+//                        try {
+//
+//                            if(timer.getTime() == nextProcess.arrivalTime) {
+//                                writeToFile(getOutPut(nextProcess, 0));
+//                            }
+//                            scheduler.wait(1);
+//                            
+//                        } catch (InterruptedException e) {
+//                            // TODO Auto-generated catch block
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+                
+                
 
-                            if(time == nextProcess.arrivalTime) {
-                                writeToFile(getOutPut(nextProcess, 0));
-                            }
-                            scheduler.wait(1);
-                            time++;
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                }
 
                 p.changeState();
 
@@ -124,13 +124,13 @@ public class Scheduler {
                     if(p.timeSlotsGranted % 2 == 0) {//if(p.wasGrantedMoreThan2TimeSlots()) {
                         int priority = getProcessPriority(p);
                         p.setPriority(priority);
-                        writeToFile("Time " + time + ", " + p.id + ", Priority updated to " + priority);
+                        writeToFile("Time " + timer.getTime() + ", " + p.id + ", Priority updated to " + priority);
                     }
                     
                     addProcess(p);
                 }
 
-                System.out.println("Finished: " +p.id+", time: " + time);
+                System.out.println("Finished: " +p.id+", time: " + timer.getTime() );
             }
         } // end while loop
         
@@ -141,22 +141,17 @@ public class Scheduler {
                 
             }
             
-            try {
-                synchronized(scheduler) {
-                    //System.out.println("Pausing scheduler thread");
-                    scheduler.wait();
-                }
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            pauseScheduler();
             reorderProcesses();
             scheduleProcesses();
         } else {
             if(!deactiveQueue.isEmpty()) {
                 scheduleProcesses();
             } else {
+            	timer.stopTimer();
+            	timer.join();
                 System.out.println("DONE");
+                
                 return;
             }
         }
@@ -171,7 +166,6 @@ public class Scheduler {
         //Queue<Process> processes = new LinkedList<Process>();
         
         String line;
-        boolean firstProcessAdded = false;
 
         while((line = reader.readLine()) != null) {
             String[] values = line.split(" ");
@@ -187,7 +181,7 @@ public class Scheduler {
             
             //System.out.println("Process found: -------------------------------- " + p.id+ ", time: " + time);
             
-            if(time < arrivalTime) {
+            if(timer.getTime() < arrivalTime) {
                 try {
                     synchronized(fileReader) {
                         fileReader.wait();
@@ -201,9 +195,7 @@ public class Scheduler {
             addProcess(p);
             processCount++;
             
-            synchronized(scheduler) {
-			    scheduler.notify();
-			}
+            resumeScheduler();
         }
         
         reader.close();
@@ -234,7 +226,7 @@ public class Scheduler {
     }
 
     public synchronized void addProcess(Process p) {
-    	System.out.println("Process aded: " + p.id + " at time: " + time);
+    	System.out.println("Process aded: " + p.id + " at time: " + timer.getTime());
     	
     		deactiveQueue.add(p);
 
@@ -250,19 +242,19 @@ public class Scheduler {
         String output = "";
         switch(p.state) {
             case ARRIVED:
-                output = "Time " + time + ", " + p.id + ", " + p.state.value;
+                output = "Time " + timer.getTime() + ", " + p.id + ", " + p.state.value;
             break;
             case STARTED:
-                output = "Time " + time + ", " + p.id + ", " + p.state.value + ", Granted: " + granted;
+                output = "Time " + timer.getTime() + ", " + p.id + ", " + p.state.value + ", Granted: " + granted;
             break;
             case PAUSED:
-                output = "Time " + time + ", " + p.id + ", " + p.state.value;
+                output = "Time " + timer.getTime() + ", " + p.id + ", " + p.state.value;
             break;
             case RESUMED:
-                output = "Time " + time + ", " + p.id + ", " + p.state.value + ", Granted: " + granted;
+                output = "Time " + timer.getTime() + ", " + p.id + ", " + p.state.value + ", Granted: " + granted;
             break;
             case TERMINATED:
-                output = "Time " + time + ", " + p.id + ", " + p.state.value;
+                output = "Time " + timer.getTime() + ", " + p.id + ", " + p.state.value;
             break;
         }
 
@@ -297,5 +289,22 @@ public class Scheduler {
     	for(Process p: queue)
     		System.out.println("In Queue => ID: " + p.id + ", " + p.priority);
     	//System.out.println("-------------------------------------");
+    }
+    
+    public void resumeScheduler() {
+        synchronized(scheduler) {
+		    scheduler.notify();
+		}
+    }
+    
+    public void pauseScheduler() {
+        synchronized(scheduler) {
+		    try {
+				scheduler.wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
     }
 }
