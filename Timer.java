@@ -1,22 +1,14 @@
 
-
-import java.sql.Timestamp;
-import java.util.function.Supplier;
-
 public class Timer implements Runnable {
     Thread thread;
     boolean on;
     int time = 1000;
-    //TimerRunnable run;
-    Scheduler scheduler;
     
-    public Timer(Scheduler scheduler) {
-
-        //run = new TimerRunnable(thread);
+    public Timer() {
         thread = new Thread(this);
-        thread.start();
         on = true;
-        this.scheduler = scheduler;
+        thread.start();
+        
     }
 
     @Override
@@ -50,6 +42,7 @@ public class Timer implements Runnable {
     
     public void join() {
 		try {
+			on = false;
 			thread.join();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block

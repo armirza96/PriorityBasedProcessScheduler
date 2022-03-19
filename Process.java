@@ -1,16 +1,15 @@
-
 /**
  * will hold process data
  */
 
-public class Process {
+public class Process implements Runnable {
     Thread thread;
     String id;
     int arrivalTime;
     int burstTime;
     int priority;
     int timeSlotsGranted = 0;
-    STATE state;
+    volatile STATE state;
     int waitingTime = 0;
     int processedTime = 0;
 
@@ -22,7 +21,7 @@ public class Process {
 
         state = STATE.ARRIVED;
 
-        thread = new Thread(id);
+        thread = new Thread(this, id);
     }
 
     public void increaseTimeSlot() {
@@ -33,45 +32,13 @@ public class Process {
         this.priority = newPriority;
     }
 
-    public boolean wasGrantedMoreThan2TimeSlots() {
-        return timeSlotsGranted >= 2;
-    }
-
     public void startProcess() {
         thread.start();
-    }
-
-    public void suspendProcess() {
-        try {
-            synchronized (thread) {
-                thread.wait();
-            }
-            
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        // synchronized(thread) {
-        //     thread.interrupt();
-        // }
-    }
-
-    public void resumeProcess() {
-        synchronized (thread) {
-            thread.notify();
-        }
     }
 
     public void terminate() {
         state = STATE.TERMINATED;
         //thread.interrupt();
-        // try {
-        //     thread.join();
-        // } catch (InterruptedException e) {
-        //     // TODO Auto-generated catch block
-        //     e.printStackTrace();
-        // }
     }
 
     public void changeState() {
@@ -102,12 +69,34 @@ public class Process {
     public void increaseWaitingTime(int wt) {
         this.waitingTime += wt;
     }
-    // public void pause(int timeSlot) {
-    //     try {
-    //         thread.wait(timeSlot);
-    //     } catch (InterruptedException e) {
-    //         // TODO Auto-generated catch block
-    //         e.printStackTrace();
-    //     }
-    // }
+
+	@Override
+	public void run() {
+		while(state != STATE.TERMINATED) {
+	        switch(state) {
+            case ARRIVED:
+                // do nothing
+            break;
+	            case STARTED:
+	            	// start the process
+	            	//System.out.println("ID: " + id + " " + state.value);
+	            break;
+	            case PAUSED:
+	            	// Pause process
+	            	//System.out.println("ID: " + id + " " + state.value);
+	            break;
+	            case RESUMED:
+	                // Continue Executing process
+	            	//System.out.println("ID: " + id + " " + state.value);
+	            break;
+	            default:
+	            	// state doesnt matter
+	            break;
+	        }
+		}
+		
+		// we can finish this thread once its state has been set to terminated
+		System.out.println("THIS PROCESS ID: " + id + " finished");
+		return;
+	}
 }
